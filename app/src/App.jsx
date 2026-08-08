@@ -4,16 +4,26 @@ import candidateData from "./data/candidates.json";
 import Home from './components/Home';
 import Candidates from './components/Candidates';
 import Interview from './components/Interview';
+import Results from './components/Results';
 import './App.css'
 
 function App() {
+
+ 
 const [page, setPage] = useState("home");
   const [selectedCandidate, setSelectedCandidate] = useState(null);
+   const [interviewAnswers, setInterviewAnswers] = useState([]);
+
+ 
 
   const handleSelectCandidate = (candidate) => {
     setSelectedCandidate(candidate);
     setPage("interview");
   };
+   const handleInterviewComplete = (answers) => {
+  setInterviewAnswers(answers);
+  setPage("results");
+};
 
 
   return (
@@ -38,6 +48,14 @@ const [page, setPage] = useState("home");
         }}
         />
       )}
+
+      {page === "results" && selectedCandidate && (
+  <Results
+    candidate={selectedCandidate}
+    answers={interviewAnswers}
+    
+  />
+)}
       </>
   );
   
