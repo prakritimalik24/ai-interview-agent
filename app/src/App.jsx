@@ -3,6 +3,7 @@ import candidateData from "./data/candidates.json";
 
 import Home from './components/Home';
 import Candidates from './components/Candidates';
+import Interview from './components/Interview';
 import './App.css'
 
 function App() {
@@ -28,10 +29,14 @@ const [page, setPage] = useState("home");
         />
       )}
 
-      {page === "interview" && (
-        <div className="text-white">
-          Interview 
-        </div>
+      {page === "interview" && selectedCandidate &&  (
+        <Interview
+        candidate={selectedCandidate}
+        onComplete={(answers) => {
+          console.log(answers);
+          setPage("results");
+        }}
+        />
       )}
       </>
   );
