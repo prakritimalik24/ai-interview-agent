@@ -14,17 +14,45 @@ const [page, setPage] = useState("home");
   const [selectedCandidate, setSelectedCandidate] = useState(null);
    const [interviewAnswers, setInterviewAnswers] = useState([]);
 
+   const [evaluation, setEvaluation] = useState("");
  
 
   const handleSelectCandidate = (candidate) => {
     setSelectedCandidate(candidate);
     setPage("interview");
   };
-   const handleInterviewComplete = (answers) => {
-  setInterviewAnswers(answers);
-  setPage("results");
-};
 
+  const handleInterviewComplete = async (answers) => {
+  try {
+    const response = await fetch("/api/evaluate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        candidate: selectedCandidate,
+        answers: answers,
+      }),
+    });
+
+    if (!response.ok) {
+  const errorData = await response.json();
+  throw new Error(errorData.error || "Failed to evaluate interview");
+}
+
+    const data = await response.json();
+
+    console.log("AI SUMMARY:", data.summary);
+
+    setInterviewAnswers(answers);
+    setEvaluation(data.summary);
+    setPage("results");
+
+  } catch (error) {
+    console.error("Evaluation error:", error);
+  }
+};
+  
 
   return (
     <>
@@ -39,21 +67,19 @@ const [page, setPage] = useState("home");
         />
       )}
 
-      {page === "interview" && selectedCandidate &&  (
-        <Interview
-        candidate={selectedCandidate}
-        onComplete={(answers) => {
-          console.log(answers);
-          setPage("results");
-        }}
-        />
-      )}
+{page === "interview" && selectedCandidate && (
+  <Interview
+    candidate={selectedCandidate}
+    onComplete={handleInterviewComplete}
+    
+  />
+)}
 
-      {page === "results" && selectedCandidate && (
+{page === "results" && selectedCandidate && (
   <Results
     candidate={selectedCandidate}
     answers={interviewAnswers}
-    
+    evaluation={evaluation}
   />
 )}
       </>

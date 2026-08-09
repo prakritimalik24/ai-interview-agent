@@ -1,4 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
+
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
 });
@@ -14,58 +15,54 @@ export default async function handler(req, res) {
     const { candidate, answers } = req.body;
 
     const prompt = `
-You are a technical interviewer evaluating a candidate after a completed interview.
+You are a technical interviewer.
+
+Analyze the following completed interview and provide a concise but useful overall evaluation.
 
 Candidate:
 Name: ${candidate.name}
 Role: ${candidate.jobRole}
-Experience: ${candidate.yearsExperience} years
-Education: ${candidate.education}
 
-Interview answers:
+Interview Answers:
+
 ${answers
   .map(
     (item, index) => `
-Question ${index + 1}
+Question ${index + 1}: ${item.question}
 Topic: ${item.topic}
-Question: ${item.question}
 Candidate Answer: ${item.answer}
 `
   )
   .join("\n")}
 
-Evaluate the candidate's complete interview.
+Write a complete interview summary.
 
-Return ONLY valid JSON in this exact structure:
-
-{
-  "score": number,
-  "strengths": ["string", "string", "string"],
-  "areasToImprove": ["string", "string", "string"],
-  "feedback": "string"
-}
-
-The score should be between 0 and 100.
-
-Base the evaluation on the quality, correctness, clarity, and completeness of the candidate's answers.
+Your summary should:
+- Discuss the candidate's overall understanding.
+- Mention concepts they understood well.
+- Mention concepts where their understanding appears weak or incomplete.
+- Comment on the clarity and quality of their answers.
+- Give a short overall assessment.
+- Be professional and constructive.
+- Do not use JSON.
+- Do not give a numerical score.
+- Write the response as normal readable text with short paragraphs and headings.
 `;
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-3.6-flash",
       contents: prompt,
-      config: {
-        responseMimeType: "application/json",
-      },
     });
 
-    const evaluation = JSON.parse(response.text);
-
-    return res.status(200).json(evaluation);
-  } catch (error) {
-    console.error("Evaluation error:", error);
-
-    return res.status(500).json({
-      error: "Failed to evaluate interview",
+    return res.status(200).json({
+      summary: response.text,
     });
-  }
+
+ } catch (error) {
+  console.error("Evaluation error:", error);
+
+  return res.status(500).json({
+    error: error.message,
+  });
+}
 }

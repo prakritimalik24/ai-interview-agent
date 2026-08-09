@@ -48,30 +48,35 @@ function Interview({ candidate, onComplete }) {
   const [answer, setAnswer] = useState("");
   const [answers, setAnswers] = useState([]);
 
+
   const question = questions[currentQuestion];
+const [isSubmitting, setIsSubmitting] = useState(false);
+const handleSubmit = async () => {
+  if (!answer.trim() || isSubmitting) return;
 
-  const handleSubmit = () => {
-    if (!answer.trim()) return;
-
-    const newAnswer = {
-      question: question.question,
-      answer: answer,
-      day: question.day,
-      topic: question.topic
-    };
-
-    const updatedAnswers = [...answers, newAnswer];
-
-    setAnswers(updatedAnswers);
-    setAnswer("");
-
-    if (currentQuestion === questions.length - 1) {
-      onComplete(updatedAnswers);
-      return;
-    }
-
-    setCurrentQuestion(currentQuestion + 1);
+  const newAnswer = {
+    question: question.question,
+    answer: answer,
+    day: question.day,
+    topic: question.topic
   };
+
+  const updatedAnswers = [...answers, newAnswer];
+
+  setAnswers(updatedAnswers);
+  setAnswer("");
+
+  if (currentQuestion === questions.length - 1) {
+    setIsSubmitting(true);
+
+    await onComplete(updatedAnswers);
+
+    setIsSubmitting(false);
+    return;
+  }
+
+  setCurrentQuestion(currentQuestion + 1);
+};
 
   return (
     <div className="min-h-screen bg-slate-950 px-6 py-10 text-white">
@@ -152,16 +157,17 @@ function Interview({ candidate, onComplete }) {
           {/* Submit */}
           <div className="mt-6 flex justify-end">
 
-            <button
-              onClick={handleSubmit}
-              disabled={!answer.trim()}
-              className="rounded-lg cursor-pointer bg-violet-700 px-6 py-3 font-semibold transition hover:bg-violet-900 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              {currentQuestion === questions.length - 1
-                ? "Finish Interview"
-                : "Submit Answer"}
-            </button>
-
+           <button
+  onClick={handleSubmit}
+  disabled={!answer.trim() || isSubmitting}
+  className="rounded-lg cursor-pointer bg-violet-700 px-6 py-3 font-semibold transition hover:bg-violet-900 disabled:cursor-not-allowed disabled:opacity-40"
+>
+  {isSubmitting
+    ? "Evaluating..."
+    : currentQuestion === questions.length - 1
+      ? "Finish Interview"
+      : "Submit Answer"}
+</button>
           </div>
 
         </div>

@@ -12,8 +12,9 @@ dist
 dist-ssr
 .env
 .env.local
-app/.env.local
-*.local
+
+.env.*.local
+.vercel
 
 # Editor directories and files
 .vscode/*
@@ -25,3 +26,6 @@ app/.env.local
 *.njsproj
 *.sln
 *.sw?
+
+.vercel
+.env*
