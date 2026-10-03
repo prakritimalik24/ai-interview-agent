@@ -1,44 +1,70 @@
 # AI Interview Agent 🤖
 
-An AI-powered technical interview platform that conducts structured interviews and evaluates candidate responses.
-
+An AI-powered technical interview platform that conducts structured interviews and provides AI-generated feedback based on candidate responses.
 
 ## Features
 
-### 👤 Candidate Selection
-- Displays candidate information such as:
-  - Name
-  - Job role
-  - Years of experience
-  - Education
-- Allows the interviewer to select a candidate before starting the interview.
+### 👤 Interview Setup
 
-###  Technical Interview
-- Presents questions one at a time.
-- Questions cover topics such as:
-  - React
-  - SQL
-  - Embeddings
-  - Vector Databases
-  - Prompt Engineering
-  - Backend & APIs
-  - AI Agents
-  - Model Context Protocol (MCP)
-- Tracks interview progress.
-- Collects answers for every question.
+Before starting the interview, candidates can enter:
 
-### AI Evaluation
-After the interview is completed:
+- Name
+- Job role
+- Years of experience
+- Preferred question types
+
+Available question types:
+
+- Technical
+- Projects
+- DSA
+- Behavioral
+- AI / ML
+
+### 💻 Technical Interview
+
+- Conducts an 8-question interview.
+- Questions are selected based on the candidate's chosen question types.
+- Questions are presented one at a time.
+- Each question must be answered before moving to the next one.
+- Questions are randomly selected for each interview.
+- Interview progress is displayed using a progress bar.
+- Candidate answers are collected throughout the interview.
+
+### 🧠 AI Evaluation
+
+After completing the interview:
 
 1. All candidate answers are collected.
-2. The answers are sent to the backend API.
-3. The AI generates an evaluation covering:
-   - Overall understanding
-   - Strengths
-   - Areas for improvement
-   - Clarity and communication
-   - Overall assessment
+2. The answers are sent to the backend evaluation API.
+3. Gemini AI analyzes the responses.
+4. The candidate receives personalized interview feedback.
 
-###  Interview Results
-The results page presents the AI-generated evaluation in a clean, readable format along with candidate information and interview statistics.
+The evaluation includes:
+
+- Overall technical understanding
+- Concepts understood well
+- Areas that need improvement
+- Answer clarity and quality
+- Overall assessment
+
+### 📊 Interview Results
+
+The results page displays:
+
+- Candidate information
+- Role and experience
+- Number of questions answered
+- AI-generated interview evaluation
+- Structured headings and readable feedback
+- Option to return to the home page
+
+## 🛠️ Tech Stack
+
+- React
+- JavaScript
+- Tailwind CSS
+- Vercel
+- Gemini API
+- React Markdown
 
