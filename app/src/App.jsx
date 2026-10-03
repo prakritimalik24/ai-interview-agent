@@ -1,21 +1,17 @@
-import { useState } from 'react'
-import candidateData from "./data/candidates.json";
+import { useState } from "react";
 
-import Home from './components/Home';
-import Candidates from './components/Candidates';
-import Interview from './components/Interview';
-import Results from './components/Results';
-import './App.css'
+import Home from "./components/Home";
+import Candidates from "./components/Candidates";
+import Interview from "./components/Interview";
+import Results from "./components/Results";
+
+import "./App.css";
 
 function App() {
-
- 
-const [page, setPage] = useState("home");
+  const [page, setPage] = useState("home");
   const [selectedCandidate, setSelectedCandidate] = useState(null);
-   const [interviewAnswers, setInterviewAnswers] = useState([]);
-
-   const [evaluation, setEvaluation] = useState("");
- 
+  const [interviewAnswers, setInterviewAnswers] = useState([]);
+  const [evaluation, setEvaluation] = useState("");
 
   const handleSelectCandidate = (candidate) => {
     setSelectedCandidate(candidate);
@@ -23,68 +19,71 @@ const [page, setPage] = useState("home");
   };
 
   const handleInterviewComplete = async (answers) => {
-  try {
-    const response = await fetch("/api/evaluate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        candidate: selectedCandidate,
-        answers: answers,
-      }),
-    });
+    try {
+      const response = await fetch("/api/evaluate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          candidate: selectedCandidate,
+          answers: answers,
+        }),
+      });
 
-    if (!response.ok) {
-  const errorData = await response.json();
-  throw new Error(errorData.error || "Failed to evaluate interview");
-}
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Evaluation failed");
+      }
 
-    const data = await response.json();
+      const data = await response.json();
 
-    console.log("AI SUMMARY:", data.summary);
+      setInterviewAnswers(answers);
+      setEvaluation(data.summary);
+      setPage("results");
 
-    setInterviewAnswers(answers);
-    setEvaluation(data.summary);
-    setPage("results");
+    } catch (error) {
+      console.log("Evaluation error:", error);
+      alert("Something went wrong while evaluating the interview.");
+    }
+  };
 
-  } catch (error) {
-    console.error("Evaluation error:", error);
-  }
-};
-  
+  const goHome = () => {
+    setSelectedCandidate(null);
+    setInterviewAnswers([]);
+    setEvaluation("");
+    setPage("home");
+  };
 
   return (
     <>
-  {page === "home" && (
+      {page === "home" && (
         <Home onStart={() => setPage("candidate")} />
       )}
 
       {page === "candidate" && (
         <Candidates
-          candidates={candidateData.candidates}
           onSelectCandidate={handleSelectCandidate}
         />
       )}
 
-{page === "interview" && selectedCandidate && (
-  <Interview
-    candidate={selectedCandidate}
-    onComplete={handleInterviewComplete}
-    
-  />
-)}
+      {page === "interview" && selectedCandidate && (
+        <Interview
+          candidate={selectedCandidate}
+          onComplete={handleInterviewComplete}
+        />
+      )}
 
-{page === "results" && selectedCandidate && (
-  <Results
-    candidate={selectedCandidate}
-    answers={interviewAnswers}
-    evaluation={evaluation}
-  />
-)}
-      </>
+      {page === "results" && selectedCandidate && (
+        <Results
+          candidate={selectedCandidate}
+          answers={interviewAnswers}
+          evaluation={evaluation}
+          onGoHome={goHome}
+        />
+      )}
+    </>
   );
-  
 }
 
-export default App
+export default App;

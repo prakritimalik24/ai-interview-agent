@@ -58,11 +58,11 @@ Your summary should:
       summary: response.text,
     });
 
- } catch (error) {
-  console.error("Evaluation error:", error);
+  } catch (error) {
+    console.error("Evaluation error:", error);
 
-  return res.status(500).json({
-    error: error.message,
-  });
-}
+    return res.status(500).json({
+      error: error.message,
+    });
+  }
 }
